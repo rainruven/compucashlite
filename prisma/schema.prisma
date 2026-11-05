@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  sortOrder Int       @default(0)
+  active    Boolean   @default(true)
+  products  Product[]
+}
+
+model Product {
+  id         Int         @id @default(autoincrement())
+  name       String
+  categoryId Int
+  category   Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  price      Decimal     @db.Decimal(10, 2)
+  vatRate    Decimal     @default(24) @db.Decimal(5, 2)
+  active     Boolean     @default(true)
+  createdAt  DateTime    @default(now())
+  orderItems OrderItem[]
+
+  @@unique([categoryId, name])
+}
+
+model DiningTable {
+  id        Int     @id @default(autoincrement())
+  name      String
+  seats     Int     @default(4)
+  sortOrder Int     @default(0)
+  orders    Order[]
+}
+
+/// status: 'open' | 'paid' | 'cancelled'
+model Order {
+  id        Int         @id @default(autoincrement())
+  receiptNo Int?        @unique
+  tableId   Int
+  table     DiningTable @relation(fields: [tableId], references: [id], onDelete: Restrict)
+  status    String      @default("open")
+  total     Decimal     @default(0) @db.Decimal(10, 2)
+  createdAt DateTime    @default(now())
+  paidAt    DateTime?
+  items     OrderItem[]
+  payments  Payment[]
+
+  @@index([tableId, status])
+  @@index([paidAt])
+}
+
+/// kitchenStatus: 'new' | 'sent' | 'ready'
+model OrderItem {
+  id            Int       @id @default(autoincrement())
+  orderId       Int
+  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     Int?
+  product       Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productName   String
+  unitPrice     Decimal   @db.Decimal(10, 2)
+  vatRate       Decimal   @db.Decimal(5, 2)
+  quantity      Int       @default(1)
+  note          String?
+  kitchenStatus String    @default("new")
+  sentAt        DateTime?
+  createdAt     DateTime  @default(now())
+
+  @@index([orderId])
+  @@index([kitchenStatus])
+}
+
+/// method: 'cash' | 'card'
+model Payment {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method    String
+  amount    Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}

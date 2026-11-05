@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html,
+body {
+  background: var(--color-slate-100);
+  color: var(--color-slate-900);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+[role="button"],
+[role="tab"] {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media print {
+  html,
+  body {
+    background: white;
+  }
+  @page {
+    margin: 8mm;
+  }
+}
