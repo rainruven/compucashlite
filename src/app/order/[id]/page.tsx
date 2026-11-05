@@ -131,7 +131,7 @@ export default function OrderPage() {
   const locked = order.paid > 0;
 
   return (
-    <div className="pb-24 lg:pb-0">
+    <div data-bottom-bar>
       <div className="mb-4 flex items-center gap-3">
         <Button variant="ghost" size="icon" asChild aria-label="Tagasi laudadesse">
           <Link href="/">
