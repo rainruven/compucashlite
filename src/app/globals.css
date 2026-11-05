@@ -18,6 +18,13 @@ button,
   touch-action: manipulation;
 }
 
+/* Keep the footer visible above the order screen's fixed mobile bottom bar. */
+@media (max-width: 1023px) {
+  body:has([data-bottom-bar]) .site-footer {
+    padding-bottom: 7rem;
+  }
+}
+
 .tabular {
   font-variant-numeric: tabular-nums;
 }
